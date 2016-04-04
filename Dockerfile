@@ -1,30 +1,30 @@
 FROM srdc/cassandra:3.3
 MAINTAINER SRDC Ltd. <technical@srdc.com.tr>
 
-#Fetch scala
+#Install Scala
 ENV SCALA_VERSION 2.10.6
 
-RUN apt-get update && apt-get install -y libjansi-java
-RUN wget www.scala-lang.org/files/archive/scala-$SCALA_VERSION.deb
-RUN dpkg -i scala-$SCALA_VERSION.deb
-RUN rm scala-$SCALA_VERSION.deb
+RUN curl -sL http://downloads.typesafe.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz | gunzip | tar -x -C /usr/local
+RUN cd /usr/local && ln -s ./scala-$SCALA_VERSION scala
+ENV SCALA_HOME  /usr/local/scala
+ENV PATH ${PATH}:${SCALA_HOME}/bin
 
 ### Fetch spark
 ENV SPARK_VERSION 1.6.0
 
-RUN mkdir /spark
-WORKDIR /spark
-RUN wget http://d3kbcqa49mib13.cloudfront.net/spark-$SPARK_VERSION-bin-hadoop2.6.tgz
-RUN tar xvfz spark-$SPARK_VERSION-bin-hadoop2.6.tgz
-RUN mv spark-$SPARK_VERSION-bin-hadoop2.6 spark-$SPARK_VERSION
-RUN rm spark-$SPARK_VERSION-bin-hadoop2.6.tgz
+RUN curl http://ftp.itu.edu.tr/Mirror/Apache/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop2.6.tgz | tar -xz -C /opt
+RUN cd /opt && ln -s ./spark-$SPARK_VERSION-bin-hadoop2.6 spark
 
-ENV SPARK_HOME /spark/spark-$SPARK_VERSION
+ENV SPARK_HOME /opt/spark
+ENV PATH $SPARK_HOME/bin:$PATH
+
 ENV SPARK_WORKER_MEMORY 1g
 ENV SPARK_DAEMON_MEMORY 1g
 
 ### Bootstrap 
 ADD bootstrap.sh /bootstrap.sh
+RUN chown root:root /bootstrap.sh
+RUN chmod +x /bootstrap.sh
 
 EXPOSE 7077 8080
 CMD ["/bootstrap.sh"]
