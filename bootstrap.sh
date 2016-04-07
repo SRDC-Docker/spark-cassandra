@@ -12,7 +12,7 @@ if [ "$SPARK_MODE" = "master" ]; then
  	
   echo "Starting Spark master..."
 
-  $SPARK_HOME/sbin/start-master.sh && /cassandra-entrypoint.sh cassandra -f 
+  $SPARK_HOME/sbin/start-master.sh && $SPARK_HOME/sbin/start-slave.sh $SPARK_MASTER_URL && /cassandra-entrypoint.sh cassandra -f  
 
   echo "Cassandra and Spark started ...."
 
