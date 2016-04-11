@@ -18,9 +18,6 @@ RUN cd /opt && ln -s ./spark-$SPARK_VERSION-bin-hadoop2.6 spark
 ENV SPARK_HOME /opt/spark
 ENV PATH $SPARK_HOME/bin:$PATH
 
-ENV SPARK_WORKER_MEMORY 1g
-ENV SPARK_DAEMON_MEMORY 1g
-
 ### Bootstrap 
 ADD bootstrap.sh /bootstrap.sh
 RUN chown root:root /bootstrap.sh
